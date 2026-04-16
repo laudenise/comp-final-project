@@ -1,0 +1,184 @@
+from abc import ABC, abstractmethod
+
+class Transaction(ABC):
+    def __init__(self, amount, category):
+        self._amount = amount
+        self._category = category
+
+    @abstractmethod
+    def get_type(self):
+        pass
+
+    def get_amount(self):
+        return self._amount
+
+    def get_category(self):
+        return self._category
+
+
+class Income(Transaction):
+    def get_type(self):
+        return "Income"
+
+
+class Expense(Transaction):
+    def get_type(self):
+        return "Expense"
+
+class User:
+    def __init__(self, name):
+        self.__name = name
+        self.__balance = 0.0
+        self.__transactions = []
+
+    def get_name(self):
+        return self.__name
+
+    def add_transaction(self, transaction):
+        self.__transactions.append(transaction)
+        if transaction.get_type() == "Income":
+            self.__balance += transaction.get_amount()
+        else:
+            self.__balance -= transaction.get_amount()
+
+    def get_balance(self):
+        return self.__balance
+
+    def get_transactions(self):
+        return self.__transactions
+
+try:
+    from transaction import Income, Expense
+    from user import User
+    print(" Imported from separate modules successfully")
+except ImportError:
+
+    print("Try this :)")
+
+    from abc import ABC, abstractmethod
+
+    class Transaction(ABC):
+        def __init__(self, amount, category):
+            self._amount = amount
+            self._category = category
+
+        @abstractmethod
+        def get_type(self):
+            pass
+
+        def get_amount(self):
+            return self._amount
+
+        def get_category(self):
+            return self._category
+
+    class Income(Transaction):
+        def get_type(self):
+            return "Income"
+
+    class Expense(Transaction):
+        def get_type(self):
+            return "Expense"
+
+    class User:
+        def __init__(self, name):
+            self.__name = name
+            self.__balance = 0.0
+            self.__transactions = []
+
+        def get_name(self):
+            return self.__name
+
+        def add_transaction(self, transaction):
+            self.__transactions.append(transaction)
+            if transaction.get_type() == "Income":
+                self.__balance += transaction.get_amount()
+            else:
+                self.__balance -= transaction.get_amount()
+
+        def get_balance(self):
+            return self.__balance
+
+        def get_transactions(self):
+            return self.__transactions
+
+
+def main():
+    name = input("Enter your name: ").strip()
+    if not name:
+        name = "Guest"
+
+    user = User(name)
+    print(f"\nWelcome, {user.get_name()}!")
+    print("Your starting balance is $0.00\n")
+
+    while True:
+        print("1. Add income")
+        print("2. Add expense")
+        print("3. Show current balance")
+        print("4. Show all transactions")
+        print("5. Exit program")
+
+        choice = input("\nEnter your choice (1-5): ").strip()
+
+        if choice == "1":
+            amount_str = input("Enter amount: ").strip()
+            category = input("Enter category (or press Enter for 'other'): ").strip()
+            if not category:
+                category = "other"
+
+            try:
+                amount = float(amount_str)
+                if amount <= 0:
+                    print("Amount must be a positive number.\n")
+                    continue
+                income = Income(amount, category)
+                user.add_transaction(income)
+                print(f"Success: Added income ${amount:.2f} in category '{category}'\n")
+            except ValueError:
+                print("Error: Please enter a valid number for amount.\n")
+
+        elif choice == "2":
+            amount_str = input("Enter amount: ").strip()
+            category = input("Enter category (or press Enter for 'other'): ").strip()
+            if not category:
+                category = "other"
+
+            try:
+                amount = float(amount_str)
+                if amount <= 0:
+                    print("Amount must be a positive number.\n")
+                    continue
+                expense = Expense(amount, category)
+                user.add_transaction(expense)
+                print(f"Success: Added expense ${amount:.2f} in category '{category}'\n")
+            except ValueError:
+                print("Error: Please enter a valid number for amount.\n")
+
+        elif choice == "3":
+            balance = user.get_balance()
+            print(f"Your current balance is: ${balance:.2f}\n")
+
+        elif choice == "4":
+            transactions = user.get_transactions()
+            if not transactions:
+                print("No transactions yet.\n")
+            else:
+                print("Your transactions:")
+                for t in transactions:
+                    t_type = t.get_type()
+                    sign = "+" if t_type == "Income" else "-"
+                    print(f"  {sign}${t.get_amount():.2f}   {t_type}   {t.get_category()}")
+                print()
+
+        elif choice == "5":
+            print(f"\nThank you for using the Budget Tracker, {user.get_name()}!")
+            print(f"Final balance: ${user.get_balance():.2f}")
+            break
+
+        else:
+            print("Invalid choice. Please enter a number between 1 and 5.\n")
+
+
+if __name__ == "__main__":
+    main()
